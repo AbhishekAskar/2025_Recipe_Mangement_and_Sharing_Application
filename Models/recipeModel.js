@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     ingredients: {
-      type: DataTypes.TEXT, // Can be JSON or plain text
+      type: DataTypes.TEXT, // store as plain text or JSON string
       allowNull: false,
     },
     instructions: {
@@ -24,8 +24,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
     },
     difficulty: {
-      type: DataTypes.ENUM("Easy", "Medium", "Hard"),
-      defaultValue: "Easy",
+      type: DataTypes.ENUM("easy", "medium", "hard"),
+      defaultValue: "easy",
+    },
+    dietaryPreference: {
+      type: DataTypes.ENUM("vegetarian", "vegan", "gluten-free", "none"),
+      defaultValue: "none",
     },
     imageUrl: {
       type: DataTypes.STRING,

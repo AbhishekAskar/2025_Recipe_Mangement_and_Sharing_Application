@@ -1,4 +1,5 @@
 const { Recipe, User } = require("../Models");
+const { Op } = require("sequelize");
 
 exports.createRecipe = async (req, res) => {
   try {
@@ -68,5 +69,41 @@ exports.deleteRecipe = async (req, res) => {
     res.status(200).json({ message: "Recipe deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+exports.searchAndFilterRecipes = async (req, res) => {
+  try {
+    const { keyword, dietary, difficulty, maxPrepTime } = req.query;
+
+    const whereClause = {};
+
+    if (keyword) {
+      whereClause[Op.or] = [
+        { title: { [Op.like]: `%${keyword}%` } },
+        { ingredients: { [Op.like]: `%${keyword}%` } },
+      ];
+    }
+
+    if (dietary) {
+      whereClause.dietaryPreference = dietary.toLowerCase();
+    }
+
+    if (difficulty) {
+      whereClause.difficulty = difficulty.toLowerCase();
+    }
+
+    if (maxPrepTime) {
+      whereClause.cookingTime = { [Op.lte]: parseInt(maxPrepTime) };
+    }
+
+    const recipes = await Recipe.findAll({
+      where: whereClause,
+      include: [{ model: User, attributes: ["name", "email"] }],
+    });
+
+    res.status(200).json({ count: recipes.length, recipes });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
