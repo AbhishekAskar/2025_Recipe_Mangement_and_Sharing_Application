@@ -1,14 +1,30 @@
-const express = require('express');
-const dotenv = require('dotenv');
+const express = require("express");
+const dotenv = require("dotenv");
+const sequelize = require("./Utils/db-connection");
+const userRoutes = require("./Routes/userRoute");
+const recipeRoutes = require("./Routes/recipeRoute");
+const favoriteRoutes = require("./Routes/favoriteRoute");
+const collectionRoutes = require("./Routes/collectionRoute");
+const reviewRoutes = require("./Routes/reviewRoute");
+const followRoutes = require("./Routes/followRoute");
+
 dotenv.config();
 
 const app = express();
+app.use(express.json());
 
-app.use('/users', (req, res)=>{
-    res.send("Hello fellow users");
-})
+// Routes
+app.use("/api/users", userRoutes);
+app.use("/api/recipes", recipeRoutes);
+app.use("/api/favorites", favoriteRoutes);
+app.use("/api/collections", collectionRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/social", followRoutes);
 
-const PORT = process.env.PORT;
-app.listen(PORT, ()=>{
-    console.log("Server is listening on port " + PORT);
-})
+app.get("/", (req, res) => res.send("Welcome to Recipe API 🍽️"));
+
+// DB Sync and Start
+sequelize.sync().then(() => {
+  console.log("DB Connected");
+  app.listen(3000, () => console.log("Server running on port 3000"));
+});

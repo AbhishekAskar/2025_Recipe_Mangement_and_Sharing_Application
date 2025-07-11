@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "root",
+    "password": "Root@123",
+    "database": "recipe_app",
+    "host": "localhost",
+    "dialect": "mysql"
+  }
+}
