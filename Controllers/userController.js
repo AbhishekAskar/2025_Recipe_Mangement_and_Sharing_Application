@@ -2,22 +2,22 @@ const { User, Recipe } = require("../Models");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-exports.registerUser = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
+exports.registerUser = async (req, res) =>{
+    try {
+        const { email, name, password } = req.body;
 
-    const userExists = await User.findOne({ where: { email } });
-    if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
+        const userExists = await User.findOne({ where: { email } })
+        if(userExists){
+            return res.status(400).json({ message: "User already exists!" })
+        }
+
+        const newUser = await User.create({ name, email, password });
+
+        res.status(200).json({ message: "User Registered Successfully", user: newUser });
+    } catch (error){
+        res.status(500).json({ error: err.message });
     }
-
-    const newUser = await User.create({ name, email, password });
-
-    res.status(201).json({ message: "User registered successfully", user: newUser });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+}
 
 exports.loginUser = async (req, res) => {
   try {

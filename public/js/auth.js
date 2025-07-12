@@ -10,23 +10,18 @@ if (signupForm) {
     const password = document.getElementById("password").value.trim();
 
     try {
-      const res = await fetch("http://localhost:3000/api/users/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+      const res = await axios.post("http://localhost:3000/api/users/register", {
+        name,
+        email,
+        password
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        alert("Signup successful! Please login.");
-        window.location.href = "login.html";
-      } else {
-        alert(data.message || "Signup failed");
-      }
+      alert("Signup successful! Please login.");
+      window.location.href = "login.html";
     } catch (err) {
       console.error(err);
-      alert("Something went wrong.");
+      const msg = err.response?.data?.message || "Signup failed";
+      alert(msg);
     }
   });
 }

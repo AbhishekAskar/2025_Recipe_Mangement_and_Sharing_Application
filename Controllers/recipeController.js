@@ -1,5 +1,44 @@
 const { Recipe, User } = require("../Models");
 const { Op } = require("sequelize");
+const s3 = require("../Utils/s3");
+const { v4: uuidv4 } = require("uuid");
+
+exports.createRecipe = async (req, res) => {
+  try {
+    const { title, ingredients, instructions, cookingTime, servings, difficulty } = req.body;
+    const userId = req.user.userId;
+
+    let imageUrl = null;
+
+    if (req.file) {
+      const s3Params = {
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `recipe-images/${uuidv4()}-${req.file.originalname}`,
+        Body: req.file.buffer,
+        ContentType: req.file.mimetype,
+        ACL: "public-read",
+      };
+
+      const uploadResult = await s3.upload(s3Params).promise();
+      imageUrl = uploadResult.Location;
+    }
+
+    const recipe = await Recipe.create({
+      title,
+      ingredients,
+      instructions,
+      cookingTime,
+      servings,
+      difficulty,
+      userId,
+      imageUrl,
+    });
+
+    res.status(201).json({ message: "Recipe created", recipe });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 exports.createRecipe = async (req, res) => {
   try {

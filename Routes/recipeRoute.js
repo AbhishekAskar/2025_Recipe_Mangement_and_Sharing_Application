@@ -10,11 +10,13 @@ const {
 } = require("../Controllers/recipeController");
 
 const { verifyToken } = require("../Middlewares/authMiddleware");
+const upload = require("../Middlewares/multer");
 
+router.post("/", verifyToken, upload.single("image"), createRecipe);
 router.post("/", verifyToken, createRecipe);
+router.get("/search", searchAndFilterRecipes);
 router.get("/", getAllRecipes);
 router.get("/:id", getRecipeById);
-router.get("/search", searchAndFilterRecipes);
 router.put("/:id", verifyToken, updateRecipe);
 router.delete("/:id", verifyToken, deleteRecipe);
 
